@@ -10,6 +10,7 @@ import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
+import { blue } from 'material-ui/colors'
 
 import Drawer from './components/Drawer'
 import Markdown from './components/Markdown'
@@ -20,7 +21,10 @@ class App extends Component {
     return (
       <HashRouter>
         <div>
-          <AppBar position="static" style={{ position: 'fixed' }}>
+          <AppBar
+            position="static"
+            style={{ position: 'fixed', backgroundColor: blue[500] }}
+          >
             <Toolbar>
               <IconButton
                 color="contrast"
