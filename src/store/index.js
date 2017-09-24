@@ -8,60 +8,73 @@ const store = observable({
   markdown: '',
   markdownStyle: 'vue',
   recentFiles: [],
+  currentReading: -1,
   ui: {
     drawer: false,
     showRecentFiles: false,
-    showStyleChoices: false
+    showStyleChoices: false,
+    comeBackSnackbar: false
   },
   settings: {
     autoChangeStyle: true
   },
-  get appBarTitle() {
+  get appBarTitle () {
     if (!this.markdown.startsWith('# ')) {
       return 'Markdown Reader'
     }
     const heading = /^#\s(.*)\n/.exec(this.markdown)[1]
     return `${heading} - Markdown Reader`
   },
-  get recentFilesName() {
+  get recentFilesName () {
     return this.recentFiles.map(file => file.name)
   },
-  loadMarkdown: action(function(markdown: string, fileName: string) {
+  loadMarkdown: action(function (markdown: string, fileName: string) {
     this.markdown = markdown
 
     if (this.recentFiles.length === 25) {
       this.recentFiles.pop()
     }
     this.recentFiles.unshift({ name: fileName, content: markdown })
+    this.currentReading = 0
   }),
-  changeStyle: action(function(style: 'vue' | 'gitbook') {
+  changeStyle: action(function (style: 'vue' | 'gitbook') {
     this.markdownStyle = style
   }),
-  toggleDrawer: action.bound(function() {
+  toggleDrawer: action.bound(function () {
     this.ui.drawer = !this.ui.drawer
   }),
-  loadRecentFiles: action(function(files) {
+  updateCurrentFileScroll: action(function (scroll) {
+    this.recentFiles[this.currentReading].scroll = scroll
+  }),
+  loadRecentFiles: action(function (files) {
     this.recentFiles = files
   }),
-  readRecentFile: action(function(index) {
+  readRecentFile: action(function (index) {
     this.markdown = this.recentFiles[index].content
+    this.currentReading = index
+    this.ui.comeBackSnackbar = this.recentFiles[index].scroll !== 0
   }),
-  toggleExpandRecentFiles: action.bound(function() {
+  toggleExpandRecentFiles: action.bound(function () {
     this.ui.showRecentFiles = !this.ui.showRecentFiles
   }),
-  toggleStyleChoicesShow: action.bound(function() {
+  toggleStyleChoicesShow: action.bound(function () {
     this.ui.showStyleChoices = !this.ui.showStyleChoices
   }),
-  toggleAutoChooseStyle: action.bound(function(value?: boolean) {
+  toggleAutoChooseStyle: action.bound(function (value?: boolean) {
     if (typeof value === 'boolean') {
       this.settings.autoChangeStyle = value
       return
     }
     this.settings.autoChangeStyle = !this.settings.autoChangeStyle
+  }),
+  toggleComeBackSnackbar: action.bound(function () {
+    this.ui.comeBackSnackbar = !this.ui.comeBackSnackbar
   })
 })
 
-reaction(() => store.appBarTitle, title => (document.title = title))
+reaction(() => store.appBarTitle, title => (
+  document.title = title
+))
 
 reaction(
   () => store.recentFiles.length,

@@ -3,8 +3,11 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import store from '../store'
+import debounce from 'lodash-es/debounce'
 
-import { Button } from 'material-ui'
+import Button from 'material-ui/Button'
+import Snackbar from 'material-ui/Snackbar'
+
 import ReactMarkdown from 'react-markdown'
 import 'typeface-roboto-mono'
 import 'typeface-fira-mono'
@@ -15,24 +18,24 @@ import '../style/dist/markdown-vue.css'
 import '../style/dist/markdown-gitbook.css'
 import 'highlightjs/styles/dracula.css'
 
-class CodeBlock extends React.Component<
-  { literal: string, language: string },
-  null
-> {
-  componentWillMount() {}
-  componentDidMount() {
+class CodeBlock extends React.Component<{ literal: string, language: string },
+  null> {
+  componentWillMount () {
+  }
+
+  componentDidMount () {
     this.highlight()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     this.highlight()
   }
 
-  highlight() {
+  highlight () {
     Highlight.highlightBlock(this.refs.code)
   }
 
-  render() {
+  render () {
     return (
       <pre>
         <code ref="code" className={this.props.language}>
@@ -43,12 +46,40 @@ class CodeBlock extends React.Component<
   }
 }
 
-function Code({ literal }) {
+function Code ({ literal }) {
   return <code className="not-block">{literal}</code>
 }
 
+document.onscroll = debounce(() => {
+  if (window.location.hash !== '#/reader') {
+    return
+  }
+
+  const scroll = window.scrollY
+  const recentFiles = store.recentFiles.slice()
+  recentFiles[store.currentReading].scroll = scroll
+  store.updateCurrentFileScroll(scroll)
+  localStorage.setItem('recentFiles', JSON.stringify(recentFiles))
+}, 500)
+
 export default observer(({ history }) => (
   <div>
+    <Snackbar
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      open={store.ui.comeBackSnackbar}
+      autoHideDuration={5000}
+      onRequestClose={store.toggleComeBackSnackbar}
+      message="Welcome back! Would you like to be back to last position?"
+      action={[
+        <Button key="ok" color="accent" dense onClick={() => {
+          window.scrollTo(
+            0,
+            store.recentFiles[store.currentReading].scroll
+          )
+          store.toggleComeBackSnackbar()
+        }}>OK</Button>
+      ]}
+    />
     <ReactMarkdown
       className={`markdown-${store.markdownStyle} padding`}
       source={store.markdown}
