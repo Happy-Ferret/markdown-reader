@@ -39,7 +39,7 @@ class App extends Component {
               </Typography>
             </Toolbar>
           </AppBar>
-          <div style={{ paddingTop: '56px' }}>
+          <div style={{ paddingTop: '65px' }}>
             <Route exact path="/" component={Welcome} />
             <Route path="/reader" component={Markdown} />
             <Route path="/settings" component={Settings} />
