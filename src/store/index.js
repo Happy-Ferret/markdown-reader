@@ -8,6 +8,7 @@ const store = observable({
   markdown: '',
   markdownStyle: 'vue',
   recentFiles: [],
+  autoChangeStyle: true,
   ui: {
     drawer: false
   },
@@ -51,6 +52,19 @@ reaction(
 reaction(
   () => store.recentFiles.length,
   () => localStorage.setItem('recentFiles', JSON.stringify(store.recentFiles))
+)
+
+reaction(
+  () => store.markdown,
+  markdown => {
+    if (!store.autoChangeStyle) {
+      return
+    }
+
+    const lettersCount =
+      Array.from(markdown).filter(char => /[a-zA-Z]/.test(char)).length
+    store.changeStyle((lettersCount / markdown.replace(/\s/g, '').length > 0.8) ? 'gitbook' : 'vue')
+  }
 )
 
 export default store
