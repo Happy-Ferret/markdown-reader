@@ -15,6 +15,7 @@ import { blue } from 'material-ui/colors'
 import Drawer from './components/Drawer'
 import Markdown from './components/Markdown'
 import Welcome from './components/Welcome'
+import Settings from './components/Settings'
 
 class App extends Component {
   render() {
@@ -41,6 +42,7 @@ class App extends Component {
           <div style={{ paddingTop: '56px' }}>
             <Route exact path="/" component={Welcome} />
             <Route path="/reader" component={Markdown} />
+            <Route path="/settings" component={Settings} />
           </div>
           <Drawer />
         </div>

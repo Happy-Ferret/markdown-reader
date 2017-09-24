@@ -10,7 +10,9 @@ const store = observable({
   recentFiles: [],
   autoChangeStyle: true,
   ui: {
-    drawer: false
+    drawer: false,
+    showRecentFiles: false,
+    showStyleChoices: false
   },
   get appBarTitle () {
     if (!this.markdown.startsWith('# ')) {
@@ -41,6 +43,12 @@ const store = observable({
   }),
   readRecentFile: action(function (index) {
     this.markdown = this.recentFiles[index].content
+  }),
+  toggleExpandRecentFiles: action.bound(function () {
+    this.ui.showRecentFiles = !this.ui.showRecentFiles
+  }),
+  toggleStyleChoicesShow: action.bound(function () {
+    this.ui.showStyleChoices = !this.ui.showStyleChoices
   })
 })
 
