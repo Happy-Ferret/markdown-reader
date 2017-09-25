@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'react-router-dom/Link'
 import { observer } from 'mobx-react'
 import store from '../store'
+import { version } from '../../package.json'
 
 import Drawer from 'material-ui/Drawer'
 import List, { ListItem, ListItemText } from 'material-ui/List'
@@ -62,6 +63,9 @@ export default observer(() => (
           names={store.recentFilesName}
         />
       </Collapse>
+      <ListItem button onClick={store.toggleDrawer}>
+        <ListItemText primary={'Version ' + version} />
+      </ListItem>
     </List>
   </Drawer>
 ))
