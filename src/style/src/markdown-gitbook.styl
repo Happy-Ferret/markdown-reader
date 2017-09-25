@@ -21,7 +21,7 @@
   code
     font-family "Fira Mono"
 
-  code.not-block
+  code:not([class^="language"])
     font-family ProximaNova
     padding 0.2em
     margin 0
@@ -38,3 +38,25 @@
     margin 0
     margin-bottom 0.85em
     padding-left 2em
+
+  table
+    display table
+    width 100%
+    border-collapse collapse
+    border-spacing 0
+    overflow auto
+    margin-top 0
+    margin-bottom 0.85em
+
+    tr
+      border-top 1px solid #ccc
+
+    td, th
+      padding 6px 13px
+      border 1px solid #ddd
+
+    thead > tr
+      background-color white
+
+    tbody > tr:nth-child(2n)
+      background-color #f8f8f8

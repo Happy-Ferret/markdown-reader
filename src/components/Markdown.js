@@ -8,7 +8,7 @@ import debounce from 'lodash-es/debounce'
 import Button from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 
-import ReactMarkdown from 'react-markdown'
+import MarkdownIt from 'markdown-it'
 import 'typeface-roboto-mono'
 import 'typeface-fira-mono'
 import Highlight from 'highlightjs'
@@ -18,37 +18,30 @@ import '../style/dist/markdown-vue.css'
 import '../style/dist/markdown-gitbook.css'
 import 'highlightjs/styles/dracula.css'
 
-class CodeBlock extends React.Component<{ literal: string, language: string },
-  null> {
-  componentWillMount () {
+const MarkdownRender = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  highlight: (src, lang) => {
+    if (lang && Highlight.getLanguage(lang)) {
+      try {
+        return (
+          '<div class="hljs">' +
+          Highlight.highlight(lang, src).value +
+          '</div>'
+        )
+      } catch (e) {}
+      try {
+        return (
+          '<div class="hljs">' +
+          Highlight.highlightAuto(src).value +
+          '</div>'
+        )
+      } catch (e) {}
+      return src
+    }
   }
-
-  componentDidMount () {
-    this.highlight()
-  }
-
-  componentDidUpdate () {
-    this.highlight()
-  }
-
-  highlight () {
-    Highlight.highlightBlock(this.refs.code)
-  }
-
-  render () {
-    return (
-      <pre>
-        <code ref="code" className={this.props.language}>
-          {this.props.literal}
-        </code>
-      </pre>
-    )
-  }
-}
-
-function Code ({ literal }) {
-  return <code className="not-block">{literal}</code>
-}
+})
 
 document.onscroll = debounce(() => {
   if (window.location.hash !== '#/reader') {
@@ -80,14 +73,10 @@ export default observer(({ history }) => (
         }}>OK</Button>
       ]}
     />
-    <ReactMarkdown
-      className={`markdown-${store.markdownStyle} padding`}
-      source={store.markdown}
-      renderers={Object.assign({}, ReactMarkdown.renderers, {
-        CodeBlock,
-        Code
-      })}
-    />
+    <div className={`markdown-${store.markdownStyle} padding`}
+         dangerouslySetInnerHTML={{
+           __html: MarkdownRender.render(store.markdown)
+         }} />
     <Button
       raised
       color="primary"
